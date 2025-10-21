@@ -1,3 +1,7 @@
+#TODO: im scared to test it
+# The goal is that the KDTree cna be called like an sklearn object
+# Like kd = KDTree(), then appended onto with the append command
+# The network of classes should provide a decent framework with safety
 import networkx
 import numpy as np
 from sklearn.neighbors import KNeighborsClassifier
@@ -12,12 +16,14 @@ class KDerror(Exception):
         self.msg = msg
         super().__init__(self.msg)
 
-@dataclass
-class data:
+
+@dataclass(frozen = True, slots = True, kw_only = True)
+class Data:
     name: str
     age: int
     profession: str
     salary: int
+
 
 class Node:
     def __init__(self, by, **kwargs):
@@ -27,24 +33,26 @@ class Node:
         self.left = None
         for key in list(kwargs.keys()):
             if key not in data:
-                KDerror("key not recognized in keyword arguments")
+                KDerror(f"{key} not recognized in keyword arguments")
                 exit
-        self.value = data(**kwargs)
+        self.value = Data(**kwargs)
+
+    def depth(self):
+        ldepth = depth(first_node.left)
+        rdepth = depth(first_node.right)
+        return (1 + max(ldepth + rdepth))
+
 
 class KDTree:
     def __init__(self, head):
         self.head = head
-    def depth(self): #TODO: this is broke
-        first_node = self.head
-        ldepth = depth(first_node.left)
-        rdepth = depth(first_node.right)
-        return (1 + max(ldepth + rdepth))
-    def append(self, data:Node): #TODO: this is broke bc depth is broke. If you fix depth it should work fine
-        curr_depth = depth()
+
+    def append(self, data:Node): 
+        max_depth = self.head.depth()
         curr_node = self.head
         curr_depth = 0
-        for _ in range(len(curr_depth)):
-            attr = data[curr_depth%len(data)]
+        for i in range(len(curr_depth)):
+            attr = data[i+1%len(data)]
             if data.attr > curr_node.attr:
                 curr_node = curr_node.right
             if data.attr < curr_node.attr:
