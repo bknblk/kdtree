@@ -4,7 +4,7 @@
 # The network of classes should provide a decent framework with safety
 
 #imports I think we'll need:
-#import networkx
+#import graphviz
 #import numpy as np
 #from sklearn.neighbors import KNeighborsClassifier
 #import pandas as pd
@@ -29,8 +29,7 @@ class Data:
 
 
 class Node:
-    def __init__(self, by, **kwargs):
-        self.by = None
+    def __init__(self, **kwargs):
         self.value = None
         self.right = None
         self.left = None
@@ -38,6 +37,7 @@ class Node:
             if key not in data:
                 KDerror(f"{key} not recognized in keyword arguments")
                 exit
+        print(kwargs)
         self.value = Data(**kwargs)
 
     def __str__(self):
@@ -61,7 +61,7 @@ class Node:
             KDError("Error in function")
             exit
             
-    def __lt__(self == other, by):
+    def __lt__(self, other, by):
         for f in self.value.Fields():
             if f.name == by:
                 type_of_by = f.type
@@ -81,30 +81,43 @@ class Node:
             
 
     def depth(self):
-        ldepth = depth(self.left)
-        rdepth = depth(self.right)
-        return (1 + max(ldepth + rdepth))
+        ldepth = 0
+        rdepth = 0
+        if self.left is not None:
+            ldepth = depth(self.left)
+        if self.right is not None:
+            rdepth = depth(self.right)
+        return (1 + max(ldepth, rdepth))
 
 
 class KDTree:
 
-    def __init__(self, head, data):
+    def __init__(self, head):
         self.head = head
-        self.data = data
 
     def append(self, data:Node): 
         max_depth = self.head.depth()
         curr_node = self.head
         curr_depth = 0
-        for i in range(len(curr_depth)):
+        for i in range(curr_depth):
             attr = data[i+1%len(data)]
-            if data.attr > curr_node.attr:
+            print(f'attr={attr}')
+            if getattr(data, attr) > getattr(curr_node, attr):
                 curr_node = curr_node.right
-            if data.attr < curr_node.attr:
+            if getattr(data, attr) < getattr(curr_node, attr):
                 curr_node = curr_node.left
-        if data.attr > curr_node.attr:
+        if getattr(data, attr) > getattr(curr_node, attr):
             curr_node.right = data
-        if data.attr < curr_node.attr:
+        if getattr(data, attr) < getattr(curr_node, attr):
             curr_node.left = data
     def __str__(self):
-        return f"KD tree with dimension {len(self.data)} and depth {self.head.depth}"
+        return f"KD tree might work!"
+
+
+
+
+if __name__ == '__main__' :
+    start_node = Node(name = 'Roman', age = '20', profession = 'Army', salary = '2')
+    kd = KDTree(head = start_node)
+    kd.append(Node(name = 'Jonah', age = '21', profession = 'Data Scientist', salary = '0'))
+
