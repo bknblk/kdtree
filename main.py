@@ -33,92 +33,50 @@ class Node:
             if key not in data:
                 KDerror(f"{key} not recognized in keyword arguments")
                 exit
-        print(kwargs)
         self.value = Data(**kwargs)
 
     def __str__(self):
         return f"Node containing {self.value}"
-
-
-    def __gt__(self, other, by):
-        for f in self.value.fields():
-            if f.name == by:
-                type_of_by = f.type
-        if type_of_by == int:
-            if self.value.by > self.value.by:
-                return True
-            if self.value.by < self.value.by:
-                return False
-        elif type_of_by == str: #implemented backwards so A is greater then B
-            if self.value.by > self.value.by:
-                return False
-            if self.value.by < self.value.by:
-                return True
-        else:
-            KDError("Error in function")
-            exit
             
-    def __lt__(self, other, by):
-        for f in self.value.fields():
-            if f.name == by:
-                type_of_by = f.type
-        if type_of_by == int:
-            if self.value.by < self.value.by:
-                return True
-            if self.value.by > self.value.by:
-                return False
-        elif type_of_by == str: #implemented backwards so A is greater then B
-            if self.value.by < self.value.by:
-                return False
-            if self.value.by > self.value.by:
-                return True
-        else:
-            KDError("Error in function")
-            exit
-            
-    def depth(self):
+    def find_depth(self):
         ldepth = 0
         rdepth = 0
-        if self.left is not None:
-            ldepth = depth(self.left)
-        if self.right is not None:
-            rdepth = depth(self.right)
+        if self.left:
+            ldepth = self.left.find_depth()
+        if self.right:
+            rdepth = self.right.find_depth()
         return (1 + max(ldepth, rdepth))
 
-
-class KDTree:
-# there might be an indexing problem, unsure honestly. Root node should be 0, but I think in the for loop its represented as 1. TODO
-    def __init__(self, head):
-        self.head = head
-        self.head.depth = 0
-
-    def append(self, new_node:Node):
-        print(self.head)
-        max_depth = self.head.depth()
-        curr_node = self.head
-        curr_depth = 1
-        for i in range(max_depth):
-            attr = [i.name for i in fields(new_node.value)][i%len(data)]
-            print(f'attr={attr}')
-            if getattr(new_node.value, attr) > getattr(curr_node.value, attr) and curr_node.right!=None:
-                curr_node = curr_node.right
-            if getattr(new_node.value, attr) < getattr(curr_node.value, attr) and curr_node.left!=None:
-                curr_node = curr_node.left
-        if getattr(new_node.value, attr) > getattr(curr_node.value, attr):
-            curr_node.right = new_node
-            curr_node.right.depth = i+1#idk if these are accurate yet
-        if getattr(new_node.value, attr) < getattr(curr_node.value, attr):
-            curr_node.left = new_node
-            curr_node.left.depth = i+1#idk if these are accurate yet
-
-    def __str__(self):
-        for i in range(self.head.depth()):
-            pass #TODO: implement, thinking like an ascii image with just the name
+    def show_tree(self):
+        print(self.value.name)
+        if self.left:
+            print('--left--')
+            self.left.show_tree()
+        if self.right:
+            print('--right--')
+            self.right.show_tree()
 
 
+    def append(self, new_node,iteration=0):
+        node_fields = fields(self.value)
+        attr = [i.name for i in node_fields][iteration%len(node_fields)]
+        if getattr(new_node.value, attr) >= (getattr(self.value, attr)):
+            if self.right:
+                self.right.append(new_node, iteration=iteration+1)
+            else:
+                self.right = new_node
+        if getattr(new_node.value, attr) < (getattr(self.value, attr)):
+            if self.left:
+                self.left.append(new_node, iteration=iteration+1)
+            else:
+                self.left = new_node
+        print(f'{new_node.value.name} added to tree')
+            
 
 if __name__ == '__main__' :
-    start_node = Node(name = 'Roman', age = '20', profession = 'Army', salary = '2')
-    kd = KDTree(head = start_node)
-    kd.append(Node(name = 'Jonah', age = '21', profession = 'Data Scientist', salary = '0'))
+    head = Node(name = 'Roman', age = 20, profession = 'Army', salary = 2)
+    head.append(Node(name = 'Jonah', age = 21, profession = 'Data Scientist', salary = 0))
+    head.append(Node(name = 'Ty', age = 22, profession = 'USMC', salary = 3600))
+    head.append(Node(name = 'Nathan', age=19, profession = 'nerd', salary = 0))
+    head.show_tree()
 
