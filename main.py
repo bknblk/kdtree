@@ -1,9 +1,6 @@
 #imports I think we'll need:
-#import graphviz
-#import numpy as np
-#from sklearn.neighbors import KNeighborsClassifier
-#import pandas as pd
-from dataclasses import dataclass, fields
+import graphviz
+from dataclasses import dataclass, fields, asdict
 import typing as t
 
 
@@ -13,7 +10,6 @@ class KDerror(Exception):
     def __init__(self, msg="Error in file"):
         self.msg = msg
         super().__init__(self.msg)
-
 
 @dataclass(frozen = True, slots = True, kw_only = True)
 class Data:
@@ -50,10 +46,10 @@ class Node:
     def show_tree(self):
         print(self.value.name)
         if self.left:
-            print('--left--')
+            print(f'--left of {self.value.name}--')
             self.left.show_tree()
         if self.right:
-            print('--right--')
+            print(f'--right of {self.value.name} --')
             self.right.show_tree()
 
 
@@ -70,7 +66,20 @@ class Node:
                 self.left.append(new_node, iteration=iteration+1)
             else:
                 self.left = new_node
-        print(f'{new_node.value.name} added to tree')
+
+    def vis(self, ax):
+        out = ''
+        for key,value in asdict(self.value).items():
+            out += f'{key}: {value}\n'
+        ax.node(self.value.name,out)
+        if self.right:
+            ax.edge(self.value.name, self.right.value.name)
+            self.right.vis(ax)
+        if self.left:
+            ax.edge(self.value.name, self.left.value.name)
+            self.left.vis(ax)
+        
+
             
 
 if __name__ == '__main__' :
@@ -78,5 +87,29 @@ if __name__ == '__main__' :
     head.append(Node(name = 'Jonah', age = 21, profession = 'Data Scientist', salary = 0))
     head.append(Node(name = 'Ty', age = 22, profession = 'USMC', salary = 3600))
     head.append(Node(name = 'Nathan', age=19, profession = 'nerd', salary = 0))
+    head.append(Node(name = 'Evan', age=21, profession = 'Pilot', salary = 100))
+    head.append(Node(name = 'Faisal',age=30, profession = 'Professor', salary = 20))
+    head.append(Node(name = 'Robert', age= 27, profession = 'Contruction', salary = 400))
+    head.append(Node(name='Sophia', age=24, profession='Designer', salary=55))
+    head.append(Node(name='Liam', age=35, profession='Manager', salary=95))
+    head.append(Node(name='Emma', age=22, profession='Intern', salary=15))
+    head.append(Node(name='Oliver', age=29, profession='Developer', salary=80))
+    head.append(Node(name='Ava', age=31, profession='Analyst', salary=65))
+    head.append(Node(name='Noah', age=26, profession='Consultant', salary=70))
+    head.append(Node(name='Isabella', age=23, profession='Assistant', salary=35))
+    head.append(Node(name='Ethan', age=33, profession='Architect', salary=90))
+    head.append(Node(name='Mia', age=25, profession='Researcher', salary=50))
+    head.append(Node(name='Lucas', age=27, profession='Technician', salary=45))
+    head.append(Node(name='Charlotte', age=30, profession='Director', salary=110))
+    head.append(Node(name='Mason', age=24, profession='Coordinator', salary=40))
+    head.append(Node(name='Amelia', age=32, profession='Specialist', salary=68))
+    head.append(Node(name='James', age=29, profession='Administrator', salary=52))
+    head.append(Node(name='Harper', age=26, profession='Scientist', salary=72))
+    head.append(Node(name='Benjamin', age=34, profession='Supervisor', salary=85))
+    head.append(Node(name='Evelyn', age=23, profession='Trainee', salary=25))
+    head.append(Node(name='Logan', age=28, profession='Operator', salary=48))
+    head.append(Node(name='Abigail', age=31, profession='Executive', salary=105))
     head.show_tree()
-
+    dot = graphviz.Digraph()
+    head.vis(dot)
+    dot.render('kdtree', format='png')
