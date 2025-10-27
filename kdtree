@@ -1,0 +1,157 @@
+digraph {
+	Isabella [label="name: Isabella
+age: 23
+profession: Assistant
+salary: 35
+"]
+	Isabella -> Evan
+	Evan [label="name: Evan
+age: 21
+profession: Pilot
+salary: 100
+"]
+	Evan -> Ethan
+	Ethan [label="name: Ethan
+age: 33
+profession: Architect
+salary: 90
+"]
+	Ethan -> Jonah
+	Jonah [label="name: Jonah
+age: 21
+profession: Data Scientist
+salary: 0
+"]
+	Jonah -> Nathan
+	Nathan [label="name: Nathan
+age: 19
+profession: nerd
+salary: 0
+"]
+	Jonah -> Ava
+	Ava [label="name: Ava
+age: 31
+profession: Analyst
+salary: 65
+"]
+	Ethan -> Emma
+	Emma [label="name: Emma
+age: 22
+profession: Intern
+salary: 15
+"]
+	Emma -> Charlotte
+	Charlotte [label="name: Charlotte
+age: 30
+profession: Director
+salary: 110
+"]
+	Evan -> Amelia
+	Amelia [label="name: Amelia
+age: 32
+profession: Specialist
+salary: 68
+"]
+	Amelia -> Roman
+	Roman [label="name: Roman
+age: 20
+profession: Army
+salary: 2
+"]
+	Roman -> Faisal
+	Faisal [label="name: Faisal
+age: 30
+profession: Professor
+salary: 20
+"]
+	Roman -> Abigail
+	Abigail [label="name: Abigail
+age: 31
+profession: Executive
+salary: 105
+"]
+	Amelia -> Benjamin
+	Benjamin [label="name: Benjamin
+age: 34
+profession: Supervisor
+salary: 85
+"]
+	Benjamin -> Evelyn
+	Evelyn [label="name: Evelyn
+age: 23
+profession: Trainee
+salary: 25
+"]
+	Benjamin -> Harper
+	Harper [label="name: Harper
+age: 26
+profession: Scientist
+salary: 72
+"]
+	Isabella -> Robert
+	Robert [label="name: Robert
+age: 27
+profession: Contruction
+salary: 400
+"]
+	Robert -> Sophia
+	Sophia [label="name: Sophia
+age: 24
+profession: Designer
+salary: 55
+"]
+	Sophia -> Mia
+	Mia [label="name: Mia
+age: 25
+profession: Researcher
+salary: 50
+"]
+	Mia -> Mason
+	Mason [label="name: Mason
+age: 24
+profession: Coordinator
+salary: 40
+"]
+	Sophia -> Noah
+	Noah [label="name: Noah
+age: 26
+profession: Consultant
+salary: 70
+"]
+	Robert -> Liam
+	Liam [label="name: Liam
+age: 35
+profession: Manager
+salary: 95
+"]
+	Liam -> Oliver
+	Oliver [label="name: Oliver
+age: 29
+profession: Developer
+salary: 80
+"]
+	Oliver -> James
+	James [label="name: James
+age: 29
+profession: Administrator
+salary: 52
+"]
+	Liam -> Lucas
+	Lucas [label="name: Lucas
+age: 27
+profession: Technician
+salary: 45
+"]
+	Lucas -> Logan
+	Logan [label="name: Logan
+age: 28
+profession: Operator
+salary: 48
+"]
+	Lucas -> Ty
+	Ty [label="name: Ty
+age: 22
+profession: USMC
+salary: 3600
+"]
+}
