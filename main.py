@@ -67,7 +67,7 @@ class Node:
                 self.left = self.left.append(new_node, iteration=iteration+1)
             else:
                 self.left = new_node
-        return self._balance()
+        return self
 
     def vis(self, ax):
         out = ''
@@ -81,55 +81,6 @@ class Node:
             ax.edge(self.value.name, self.right.value.name)
             self.right.vis(ax)
     
-    def _get_balance(self):
-        lheight = 0
-        rheight = 0
-        if self.left:
-            lheight = self.left.find_depth()
-        if self.right:
-            rheight = self.right.find_depth()
-        return lheight - rheight
-
-    def _rotate_l(self):
-        new_head = self.right
-        self.right = new_head.left
-        new_head.left = self
-        return new_head
-
-
-    def _rotate_r(self):
-        new_head = self.left
-        self.left = new_head.right
-        new_head.right = self
-        return new_head
-    
-    def _rotate_rl(self):
-        self.right = self.right._rotate_r()
-        return self._rotate_l()
-
-    def _rotate_lr(self):
-        self.left = self.left._rotate_l()
-        return self._rotate_r()
-
-    def _balance(self):
-        bal = self._get_balance()
-        if bal > 1:
-            cbal = self.left._get_balance()
-            if cbal >= 0:
-                return self._rotate_r()
-            if cbal < 0:
-                return self._rotate_lr()
-        if bal < -1:
-            cbal = self.right._get_balance()
-            if cbal <= 0:
-                return self._rotate_l()
-            if cbal > 0:
-                return self._rotate_rl()
-        return self
-        
-
-
-            
 
 if __name__ == '__main__' :
     head = Node(name = 'Roman', age = 20, profession = 'Army', salary = 2)
