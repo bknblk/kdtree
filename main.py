@@ -69,6 +69,15 @@ class Node:
                 self.left = new_node
         return self
 
+
+    def mass_append(self, sidx, data, iteration=0):
+        if len(sidx["name"]) == 0:
+            return None
+        if len(sidx["name"]) == 1:
+            idx = sidx["name"][0]
+            return Node(**asdict(data[idx]))
+
+
     def vis(self, ax):
         out = ''
         for key,value in asdict(self.value).items():
@@ -84,33 +93,45 @@ class Node:
 
 if __name__ == '__main__' :
     head = Node(name = 'Roman', age = 20, profession = 'Army', salary = 2)
-    head = head.append(Node(name = 'Jonah', age = 21, profession = 'Data Scientist', salary = 0))
-    head = head.append(Node(name = 'Ty', age = 22, profession = 'USMC', salary = 3600))
-    head = head.append(Node(name = 'Nathan', age=19, profession = 'nerd', salary = 0))
-    head = head.append(Node(name = 'Evan', age=21, profession = 'Pilot', salary = 100))
-    head = head.append(Node(name = 'Faisal',age=30, profession = 'Professor', salary = 20))
-    head = head.append(Node(name = 'Robert', age= 27, profession = 'Contruction', salary = 400))
-    head = head.append(Node(name='Sophia', age=24, profession='Designer', salary=55))
-    head = head.append(Node(name='Liam', age=35, profession='Manager', salary=95))
-    head = head.append(Node(name='Emma', age=22, profession='Intern', salary=15))
-    head = head.append(Node(name='Oliver', age=29, profession='Developer', salary=80))
-    head = head.append(Node(name='Ava', age=31, profession='Analyst', salary=65))
-    head = head.append(Node(name='Noah', age=26, profession='Consultant', salary=70))
-    head = head.append(Node(name='Isabella', age=23, profession='Assistant', salary=35))
-    head = head.append(Node(name='Ethan', age=33, profession='Architect', salary=90))
-    head = head.append(Node(name='Mia', age=25, profession='Researcher', salary=50))
-    head = head.append(Node(name='Lucas', age=27, profession='Technician', salary=45))
-    head = head.append(Node(name='Charlotte', age=30, profession='Director', salary=110))
-    head = head.append(Node(name='Mason', age=24, profession='Coordinator', salary=40))
-    head = head.append(Node(name='Amelia', age=32, profession='Specialist', salary=68))
-    head = head.append(Node(name='James', age=29, profession='Administrator', salary=52))
-    head = head.append(Node(name='Harper', age=26, profession='Scientist', salary=72))
-    head = head.append(Node(name='Benjamin', age=34, profession='Supervisor', salary=85))
-    head = head.append(Node(name='Evelyn', age=23, profession='Trainee', salary=25))
-    head = head.append(Node(name='Logan', age=28, profession='Operator', salary=48))
-    head = head.append(Node(name='Abigail', age=31, profession='Executive', salary=105))
-    head.show_tree()
+    data = []
+    data.append(Data(name = 'Jonah', age = 21, profession = 'Data Scientist', salary = 0))
+    data.append(Data(name = 'Ty', age = 22, profession = 'USMC', salary = 3600))
+    data.append(Data(name = 'Nathan', age=19, profession = 'nerd', salary = 0))
+    data.append(Data(name = 'Evan', age=21, profession = 'Pilot', salary = 100))
+    data.append(Data(name = 'Faisal',age=30, profession = 'Professor', salary = 20))
+    data.append(Data(name = 'Robert', age= 27, profession = 'Contruction', salary = 400))
+    data.append(Data(name='Sophia', age=24, profession='Designer', salary=55))
+    data.append(Data(name='Liam', age=35, profession='Manager', salary=95))
+    data.append(Data(name='Emma', age=22, profession='Intern', salary=15))
+    data.append(Data(name='Oliver', age=29, profession='Developer', salary=80))
+    data.append(Data(name='Ava', age=31, profession='Analyst', salary=65))
+    data.append(Data(name='Noah', age=26, profession='Consultant', salary=70))
+    data.append(Data(name='Isabella', age=23, profession='Assistant', salary=35))
+    data.append(Data(name='Ethan', age=33, profession='Architect', salary=90))
+    data.append(Data(name='Mia', age=25, profession='Researcher', salary=50))
+    data.append(Data(name='Lucas', age=27, profession='Technician', salary=45))
+    data.append(Data(name='Charlotte', age=30, profession='Director', salary=110))
+    data.append(Data(name='Mason', age=24, profession='Coordinator', salary=40))
+    data.append(Data(name='Amelia', age=32, profession='Specialist', salary=68))
+    data.append(Data(name='James', age=29, profession='Administrator', salary=52))
+    data.append(Data(name='Harper', age=26, profession='Scientist', salary=72))
+    data.append(Data(name='Benjamin', age=34, profession='Supervisor', salary=85))
+    data.append(Data(name='Evelyn', age=23, profession='Trainee', salary=25))
+    data.append(Data(name='Logan', age=28, profession='Operator', salary=48))
+    data.append(Data(name='Abigail', age=31, profession='Executive', salary=105))
+    sidx = {
+            "name":[],
+            "age":[],
+            "profession":[],
+            "salary":[]
+            }
+    for key, _ in sidx.items():
+        capture = list(enumerate(data))
+        cap_sort = sorted(capture, key = lambda x: getattr(x[1],key))
+
+    for datum in data:
+        head.append(datum)
+
     dot = graphviz.Digraph()
     head.vis(dot)
     dot.render('kdtree', format='png')
-    head.show_tree()
