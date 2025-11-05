@@ -71,6 +71,7 @@ class Node:
 
 
     def mass_append(self, sidx, data, iteration=0):
+        med = lambda lst: lst[len(lst)//2]
         if len(sidx["name"]) == 0:
             return None
         if len(sidx["name"]) == 1:
