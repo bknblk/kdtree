@@ -1,3 +1,12 @@
+'''
+File: main.py
+Author: Roman Zalewski, Jonah Taylor
+Purpose: demonstrate a manually implemented, balanced kd tree
+Version: See github.com/bknblk/kdtree
+Resources: Claude AI was used to verify the integrity of the KD tree, since 
+           they tend to be long and sometimes hard to follow
+           Anthropic. (2024). Claude 3.5 Sonnet [Large language model]. Retrieved Oct 12, 2025, from conversation with Claude.
+'''
 import graphviz
 from dataclasses import dataclass, fields, asdict
 import typing as t
@@ -8,6 +17,9 @@ data = ("name", "age", "profession", "salary")
 
 
 class KDerror(Exception):
+    """
+    Just a base error so I can see if something went wrong in the code, or with the user input
+    """
     def __init__(self, msg="Error in file"):
         self.msg = msg
         super().__init__(self.msg)
@@ -15,6 +27,9 @@ class KDerror(Exception):
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class Data:
+    """
+    Main dataclass used for storing info, just some encapsulation
+    """
     name: str
     age: int
     profession: str
@@ -22,6 +37,9 @@ class Data:
 
 
 class Node:
+    """
+    the big class, everything is build off a node, using the attributes "left" and "right" like pointers
+    """
     def __init__(self, **kwargs):
         self.value = None
         self.right = None
@@ -37,6 +55,9 @@ class Node:
         return f"Node containing {self.value}"
 
     def find_depth(self):
+        """
+        mostly a helper function, but used to find the depth below a node
+        """
         ldepth = 0
         rdepth = 0
         if self.left:
@@ -46,6 +67,9 @@ class Node:
         return 1 + max(ldepth, rdepth)
 
     def show_tree(self):
+        '''
+        manually print tree for debugging purposes
+        '''
         print(self.value.name)
         if self.left:
             print(f"--left of {self.value.name}--")
@@ -55,6 +79,10 @@ class Node:
             self.right.show_tree()
 
     def append(self, new_node, iteration=0):
+        '''
+        This is the append function for single values.
+        note: the tree will not be balanced if values are inputed one by one
+        '''
         node_fields = fields(self.value)
         attr = [i.name for i in node_fields][iteration % len(node_fields)]
         if getattr(new_node.value, attr) >= (getattr(self.value, attr)):
@@ -71,6 +99,9 @@ class Node:
 
     @classmethod
     def build_balanced(cls, data_list):
+        '''
+        This is the mass import, will result in a balanced kd tree
+        '''
         sidx = {"name": [], "age": [], "profession": [], "salary": []}
         for key in sidx.keys():
             capture = list(enumerate(data_list))
@@ -80,6 +111,12 @@ class Node:
 
     @staticmethod
     def _build_recursive(sidx, data, iteration=0):
+        '''
+        helper for build_balanced()
+        sidx: sorted indexes from build_balanced
+        data: mass list in Data objs
+        iteration: used to recursion management
+        '''
         med = lambda lst: lst[len(lst) // 2]
         if len(sidx["name"]) == 0:
             return None
@@ -109,6 +146,9 @@ class Node:
         return node
 
     def vis(self, ax):  # if this vis doesnt work, take out the else statements
+        '''
+        graphviz implementation
+        '''
         out = ""
         for key, value in asdict(self.value).items():
             out += f"{key}: {value}\n"
