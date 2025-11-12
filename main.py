@@ -79,7 +79,7 @@ class Node:
             return Node(**asdict(data[idx]))
 
 
-    def vis(self, ax):
+    def vis(self, ax): #if this vis doesnt work, take out the else statements
         out = ''
         for key,value in asdict(self.value).items():
             out += f'{key}: {value}\n'
@@ -87,9 +87,13 @@ class Node:
         if self.left:
             ax.edge(self.value.name, self.left.value.name)
             self.left.vis(ax)
+        else:
+            ax.edge(self.value.name, self.value.name, style = "invis")
         if self.right:
             ax.edge(self.value.name, self.right.value.name)
             self.right.vis(ax)
+        else:
+            ax.edge(self.value.name, self.value.name, style = "invis")
     
 
 if __name__ == '__main__' :
