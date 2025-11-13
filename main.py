@@ -5,6 +5,7 @@ Purpose: demonstrate a manually implemented, balanced kd tree
 Version: See github.com/bknblk/kdtree
 Resources: Claude AI was used to verify the integrity of the KD tree, since 
            they tend to be long and sometimes hard to follow
+           and to generate random data
            Anthropic. (2024). Claude 3.5 Sonnet [Large language model]. Retrieved Oct 12, 2025, from conversation with Claude.
 '''
 import graphviz
@@ -12,6 +13,7 @@ from dataclasses import dataclass, fields, asdict
 import typing as t
 from collections import deque
 import pandas as pd
+import time
 
 
 data = ("name", "age", "profession", "salary")
@@ -186,7 +188,62 @@ class Node:
         else:
             ax.edge(node_id, node_id, style="invis")
 
+    @staticmethod
+    def _distance(p1:IrisData,p2:IrisData):
+        total_d = 0
+        for field in fields(p1):
+            sub = getattr(p1,field.name) - getattr(p2,field.name)
+            total_d += sub**2
+        return total_d ** 0.5
 
+    @staticmethod
+    def _update_k_best(k_best, distance, node, k):
+        k_best.append((distance, node))
+        k_best.sort(key=lambda x: x[0])
+        return k_best[:k]
+
+    def knn_search(self, query, k):
+        k_best = []
+        field_names = [f.name for f in fields(query)]
+        k_best = self._knn_recursive(query, k_best, k, field_names, depth=0)
+        return k_best
+
+    def _knn_recursive(self, query, k_best, k, field_names, depth):
+        if self is None:
+            return k_best
+        dist = Node._distance(self.value, query)
+        k_best = Node._update_k_best(k_best, dist, self, k)
+        current_dim = field_names[depth%len(field_names)]
+        query_val = getattr(query, current_dim)
+        self_val = getattr(self.value, current_dim)
+
+        if query_val < self_val:
+            near_child = self.left
+            far_child = self.right
+        else:
+            near_child = self.right
+            far_child = self.left
+
+        if near_child:
+            k_best = near_child._knn_recursive(query, k_best, k, field_names, depth + 1)
+
+        splitting_distance = abs(query_val - self_val)
+
+        search_far = (len(k_best) < k) or (splitting_distance < k_best[-1][0])
+
+        if search_far and far_child:
+            k_best = far_child._knn_recursive(query, k_best, k, field_names, depth +1)
+
+        return k_best
+
+def brute_force_knn(data_list, query, k):
+    distances = []
+    for item in data_list:
+        dist = Node._distance(query, item)
+        distances.append((dist, item))
+    
+    distances.sort(key=lambda x: x[0])
+    return distances[:k]
 
 
 
@@ -242,7 +299,29 @@ if __name__ == "__main__":
     dot = graphviz.Digraph()
     tree.vis(dot)
     dot.render("iristree", format='png')
+    tree = Node.build_balanced(iris_data[:100])  
+    query = iris_data[0]
 
+    neighbors = tree.knn_search(query, k=5)
 
+    print(f"Query: {query}")
+    print("\nNearest neighbors:")
+    for dist, node in neighbors:
+        print(f"  Distance: {dist:.3f}, Data: {node.value}")
+
+    for n in [100, 500, 1000, 5000, 10000]:
+        subset = iris_data[:n]
+        tree = Node.build_balanced(subset)
+        query = subset[0]
+        
+        start = time.time()
+        tree_result = tree.knn_search(query, k=5)
+        tree_time = time.time() - start
+        
+        start = time.time()
+        brute_result = brute_force_knn(subset, query, k=5)
+        brute_time = time.time() - start
+        
+        print(f"n={n}: k-d tree={tree_time:.6f}s, brute force={brute_time:.6f}s, speedup={brute_time/tree_time:.2f}x")
 
 
