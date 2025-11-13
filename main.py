@@ -56,11 +56,14 @@ class Node:
         self.right = None
         self.left = None
         self.depth = None
-        for key in list(kwargs.keys()):
-            if key not in data:
-                KDerror(f"{key} not recognized in keyword arguments")
-                exit
-        self.value = Data(**kwargs)
+        if data_obj:
+            self.value = data_obj
+        elif kwargs:
+            for key in list(kwargs.keys()):
+                if key not in data:
+                    KDerror(f"{key} not recognized in keyword arguments")
+                    exit
+            self.value = Data(**kwargs)
 
     def __str__(self):
         return f"Node containing {self.value}"
@@ -79,15 +82,17 @@ class Node:
 
     def show_tree(self):
         '''
-        manually print tree for debugging purposes
+        manually print tree for debug
         '''
-        print(self.value.name)
+        identifier = str(self.value) 
+        print(identifier)
         if self.left:
-            print(f"--left of {self.value.name}--")
+            print(f"--left of {identifier}--")
             self.left.show_tree()
         if self.right:
-            print(f"--right of {self.value.name} --")
+            print(f"--right of {identifier} --")
             self.right.show_tree()
+
 
     def append(self, new_node, iteration=0):
         '''
@@ -131,18 +136,20 @@ class Node:
         iteration: used to recursion management
         '''
         med = lambda lst: lst[len(lst) // 2]
-        if len(sidx[field_names[0]]) == 0:
+        first_field = field_names[0]
+
+        if len(sidx[first_field]) == 0:
             return None
-        if len(sidx[field_names[0]]) == 1:
-            idx = sidx[field_names[0]][0]
-            return Node(**asdict(data[idx]))
+        if len(sidx[first_field]) == 1:
+            idx = sidx[first_field][0]
+            return Node(data_obj=data[idx])
 
         dimensions = field_names
         current_dim = dimensions[iteration % len(field_names)]
         median_idx = med(sidx[current_dim])
         median_data = data[median_idx]
         median_value = getattr(median_data, current_dim)
-        node = Node(**asdict(median_data))
+        node = Node(data_obj=median_data)
         left_sidx = {dim: [] for dim in dimensions}
         right_sidx = {dim: [] for dim in dimensions}
         for dim in dimensions:
