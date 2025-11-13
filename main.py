@@ -11,6 +11,7 @@ import graphviz
 from dataclasses import dataclass, fields, asdict
 import typing as t
 from collections import deque
+import pandas as pd
 
 
 data = ("name", "age", "profession", "salary")
@@ -35,12 +36,22 @@ class Data:
     profession: str
     salary: int
 
+@dataclass(frozen=True, slots=True, kw_only=True)
+class IrisData:
+    """
+    Main dataclass used for storing info, just some encapsulation
+    """
+    sepal_len: float
+    sepal_width: float
+    petal_len: float
+    petal_width: float
+
 
 class Node:
     """
     the big class, everything is build off a node, using the attributes "left" and "right" like pointers
     """
-    def __init__(self, **kwargs):
+    def __init__(self, data_obj=None, **kwargs):
         self.value = None
         self.right = None
         self.left = None
@@ -102,15 +113,17 @@ class Node:
         '''
         This is the mass import, will result in a balanced kd tree
         '''
-        sidx = {"name": [], "age": [], "profession": [], "salary": []}
+        field_names = [f.name for f in fields(data_list[0])]
+        print(field_names)
+        sidx = {field: [] for field in field_names}
         for key in sidx.keys():
             capture = list(enumerate(data_list))
             cap_sort = sorted(capture, key=lambda x: getattr(x[1], key))
             sidx[key] = [a[0] for a in cap_sort]
-        return cls._build_recursive(sidx, data_list)
+        return cls._build_recursive(sidx, data_list, field_names)
 
     @staticmethod
-    def _build_recursive(sidx, data, iteration=0):
+    def _build_recursive(sidx, data,field_names, iteration=0):
         '''
         helper for build_balanced()
         sidx: sorted indexes from build_balanced
@@ -118,14 +131,14 @@ class Node:
         iteration: used to recursion management
         '''
         med = lambda lst: lst[len(lst) // 2]
-        if len(sidx["name"]) == 0:
+        if len(sidx[field_names[0]]) == 0:
             return None
-        if len(sidx["name"]) == 1:
-            idx = sidx["name"][0]
+        if len(sidx[field_names[0]]) == 1:
+            idx = sidx[field_names[0]][0]
             return Node(**asdict(data[idx]))
 
-        dimensions = ["name", "age", "profession", "salary"]
-        current_dim = dimensions[iteration % len(dimensions)]
+        dimensions = field_names
+        current_dim = dimensions[iteration % len(field_names)]
         median_idx = med(sidx[current_dim])
         median_data = data[median_idx]
         median_value = getattr(median_data, current_dim)
@@ -140,8 +153,9 @@ class Node:
                     left_sidx[dim].append(idx)
                 else:
                     right_sidx[dim].append(idx)
-        node.left = Node._build_recursive(left_sidx, data, iteration + 1)
-        node.right = Node._build_recursive(right_sidx, data, iteration + 1)
+        node.left = Node._build_recursive(left_sidx, data, field_names, iteration + 1)
+        node.right = Node._build_recursive(right_sidx, data,field_names, iteration + 1)
+
 
         return node
 
@@ -152,17 +166,21 @@ class Node:
         out = ""
         for key, value in asdict(self.value).items():
             out += f"{key}: {value}\n"
-        ax.node(self.value.name, out)
+        node_id = str(id(self))
+        ax.node(node_id, out)
         if self.left:
-            ax.edge(self.value.name, self.left.value.name)
+            ax.edge(node_id, str(id(self.left)))
             self.left.vis(ax)
         else:
-            ax.edge(self.value.name, self.value.name, style="invis")
+            ax.edge(node_id, node_id, style="invis")
         if self.right:
-            ax.edge(self.value.name, self.right.value.name)
+            ax.edge(node_id, str(id(self.right)))
             self.right.vis(ax)
         else:
-            ax.edge(self.value.name, self.value.name, style="invis")
+            ax.edge(node_id, node_id, style="invis")
+
+
+
 
 
 if __name__ == "__main__":
@@ -207,3 +225,17 @@ if __name__ == "__main__":
     dot = graphviz.Digraph()
     head.vis(dot)
     dot.render("kdtree", format="png")
+
+    #iris impl
+    df = pd.read_csv('iris.csv')
+    iris_data = []
+    for idx, row in df.iterrows():
+        iris_data.append(IrisData(sepal_len = row['sepal.length'], sepal_width = row['sepal.width'], petal_len = row['petal.length'], petal_width = row['petal.width']))
+    tree = Node.build_balanced(iris_data)
+    dot = graphviz.Digraph()
+    tree.vis(dot)
+    dot.render("iristree", format='png')
+
+
+
+
